@@ -1,0 +1,266 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>1</groupId>
+  <artifactId>1</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>exjobb</name>
+  <description>	</description>
+  
+  <properties>
+  	<maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  	<kompics.version>0.9.1-SNAPSHOT</kompics.version>
+  	<ktoolbox.version>2.0.1-SNAPSHOT</ktoolbox.version>
+  	<jetty.version>9.2.15.v20160210</jetty.version>
+  	<logger.version>1.7.5</logger.version>
+  	<args4j.version>2.33</args4j.version>
+  	<jstl.version>1.2</jstl.version>
+  </properties>
+  
+  <dependencies>
+  	<dependency>
+  	
+  	<!-- Kompics -->
+		<groupId>se.sics.kompics.simulator</groupId>
+    	<artifactId>core</artifactId>
+    	<version>${kompics.version}</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.sics.ktoolbox.overlaymngr</groupId>
+        <artifactId>core</artifactId>
+        <version>${ktoolbox.version}</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.sics.ktoolbox.overlaymngr.bootstrap</groupId>
+        <artifactId>client</artifactId>
+        <version>${ktoolbox.version}</version>
+  	</dependency>
+  	<dependency>
+        <groupId>se.sics.ktoolbox.overlaymngr.bootstrap</groupId>
+        <artifactId>server</artifactId>
+        <version>${ktoolbox.version}</version>
+    </dependency>
+  	<dependency>
+  		<groupId>se.sics.ktoolbox.simulator</groupId>
+        <artifactId>simulator-core</artifactId>
+        <version>1.8-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>se.sics.ktoolbox.simulator</groupId>
+        <artifactId>simulator-dsl</artifactId>
+        <version>1.8-SNAPSHOT</version>
+  	</dependency>
+  	<!-- Log4j -->
+  	
+  	<dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${logger.version}</version>
+    </dependency>
+    
+    <!-- Jetty -->
+    <dependency>
+      	<groupId>org.eclipse.jetty</groupId>
+      	<artifactId>jetty-server</artifactId>
+      	<version>${jetty.version}</version>
+  	</dependency>
+  	
+  	 <dependency>
+		<groupId>org.eclipse.jetty</groupId>
+		<artifactId>jetty-webapp</artifactId>
+		<version>${jetty.version}</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.eclipse.jetty</groupId>
+		<artifactId>jetty-annotations</artifactId>
+		<version>${jetty.version}</version>
+	</dependency>
+	
+	<!--Jetty Apache JSP dependency  -->
+	
+	<dependency>
+		<groupId>org.eclipse.jetty</groupId>
+		<artifactId>apache-jsp</artifactId>
+		<version>${jetty.version}</version>
+	</dependency>
+	
+	<!-- JSTL Dependency -->
+	<dependency>
+		<groupId>jstl</groupId>
+		<artifactId>jstl</artifactId>
+		<version>${jstl.version}</version>
+	</dependency>
+	
+	<!--  Args4j -->
+  	<dependency>
+        <groupId>args4j</groupId>
+        <artifactId>args4j</artifactId>
+        <version>${args4j.version}</version>
+    </dependency>
+  </dependencies>
+  
+  <build>
+  	<plugins>
+  		<plugin>
+	  		<groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-shade-plugin</artifactId>
+	        <version>2.3</version>
+	        <executions>
+	            <execution>
+	                <phase>package</phase>
+	                <goals>
+	                    <goal>shade</goal>
+	                </goals>
+	                <configuration>
+	                    <shadedArtifactAttached>true</shadedArtifactAttached> 
+	                    <shadedClassifierName>shaded</shadedClassifierName> 
+	                    <transformers>
+	                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+	                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+	                            <mainClass>manager.SimulationLauncher</mainClass>
+	                        </transformer>
+	                    </transformers>
+	                    <filters>
+	                        <filter>
+	                            <artifact>*:*</artifact>
+	                            <excludes>
+	                                <exclude>META-INF/*.SF</exclude>
+	                                <exclude>META-INF/*.DSA</exclude>
+	                                <exclude>META-INF/*.RSA</exclude>
+	                                <exclude>application.conf</exclude>
+	                                <exclude>config.yml</exclude>
+	                                <exclude>log4j.properties</exclude>
+	                            </excludes>
+	                        </filter>
+	                    </filters>                        
+	                </configuration>
+	            </execution>
+				<execution>
+					<id>bootstrap-server</id>
+	                <phase>package</phase>
+	                <goals>
+	                    <goal>shade</goal>
+	                </goals>
+	                <configuration>
+	                    <shadedArtifactAttached>true</shadedArtifactAttached> 
+	                    <shadedClassifierName>shaded</shadedClassifierName> 
+	                    <transformers>
+	                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+	                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+	                            <mainClass>manager.production.bootstrap.BootstrapServer</mainClass>
+	                        </transformer>
+	                    </transformers>
+	                    <finalName>bootstrap-server</finalName>
+	                    <filters>
+	                        <filter>
+	                            <artifact>*:*</artifact>
+	                            <excludes>
+	                                <exclude>META-INF/*.SF</exclude>
+	                                <exclude>META-INF/*.DSA</exclude>
+	                                <exclude>META-INF/*.RSA</exclude>
+	                                <exclude>application.conf</exclude>
+	                                <exclude>config.yml</exclude>
+	                                <exclude>log4j.properties</exclude>
+	                            </excludes>
+	                        </filter>
+	                    </filters>                        
+	                </configuration>
+	            </execution>
+	            <!-- <execution>
+					<id>bootstrap-client</id>
+	                <phase>package</phase>
+	                <goals>
+	                    <goal>shade</goal>
+	                </goals>
+	                <configuration>
+	                    <shadedArtifactAttached>true</shadedArtifactAttached> 
+	                    <shadedClassifierName>shaded</shadedClassifierName> 
+	                    <transformers>
+	                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+	                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+	                            <mainClass>manager.test.bootstrapclient.BootstrapClient</mainClass>
+	                        </transformer>
+	                    </transformers>
+	                    <finalName>bootstrap-client</finalName>
+	                    <filters>
+	                        <filter>
+	                            <artifact>*:*</artifact>
+	                            <excludes>
+	                                <exclude>META-INF/*.SF</exclude>
+	                                <exclude>META-INF/*.DSA</exclude>
+	                                <exclude>META-INF/*.RSA</exclude>
+	                                <exclude>application.conf</exclude>
+	                                <exclude>config.yml</exclude>
+	                                <exclude>log4j.properties</exclude>
+	                            </excludes>
+	                        </filter>
+	                    </filters>                        
+	                </configuration>
+	            </execution>-->
+	        </executions>
+  		</plugin>
+  		<plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.7</version>
+          <executions>
+            <execution>
+              <id>copy-resources</id>
+              <!-- here the phase you need -->
+              <phase>validate</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>${basedir}/target/src/main/webapp</outputDirectory>
+                <resources>          
+                  <resource>
+                    <directory>src/main/webapp</directory>
+                    <filtering>true</filtering>
+                  </resource>
+                </resources>              
+              </configuration>            
+            </execution>
+          </executions>
+      </plugin>
+  	</plugins>
+  </build>
+  <distributionManagement>
+	  <repository>
+	      <id>sics-release-repository</id>
+	      <name>SICS Repository</name>
+	      <url>scpexe://kompics.i.sics.se/home/maven/repository</url>
+	  </repository>
+	  <snapshotRepository>
+	      <id>sics-snapshot-repository</id>
+	      <name>SICS Snapshot Repository</name>
+	      <url>scpexe://kompics.i.sics.se/home/maven/snapshotrepository</url>
+	  </snapshotRepository>
+	  <downloadUrl>http://kompics.sics.se/maven/repository</downloadUrl>
+  </distributionManagement>
+  <repositories>
+      <repository>
+          <id>sics-release</id>
+          <name>SICS Release Repository</name>
+          <url>http://kompics.sics.se/maven/repository</url>
+          <releases>
+              <enabled>true</enabled>
+          </releases>
+          <snapshots>
+              <enabled>false</enabled>
+          </snapshots>
+      </repository>
+      <repository>
+          <id>sics-snapshot</id>
+          <name>SICS Snapshot Repository</name>
+          <url>http://kompics.sics.se/maven/snapshotrepository</url>
+          <releases>
+              <enabled>false</enabled>
+          </releases>
+          <snapshots>
+              <enabled>true</enabled>
+          </snapshots>
+      </repository>
+  </repositories>
+</project>
